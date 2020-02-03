@@ -1,0 +1,40 @@
+---
+title: "DATA 607 Homework 1"
+author: "James Williams"
+source: https://fivethirtyeight.com/features/how-were-tracking-donald-trumps-approval-ratings/
+output: pdf_document
+---
+# Overview
+### Presidential approval ratings can serve as a proxy measure for public support for a president's affiliated political party. FiveThirtyEight compiled a dataset of Presdient Donald Trump's approval rating since his 2017 inauguration from 66 polling companies.The data offers insights into historical approval trends for Presdient Trump that potentially may offer predictive insights into the Republican party's performance in future elections.
+```{r}
+library(RCurl) 
+library(plyr)
+library(ggplot2)
+library(ggfortify)
+x <- getURL("https://raw.githubusercontent.com/jambawilliams/TrumpApprovalRatings/master/approval_polllist.csv") 
+trump_ratings <- read.csv(text = x)
+```
+# Identify columns
+### Creates a listing of all the column headers.
+```{r}
+colnames(trump_ratings)
+```
+# Clean data
+### Creates a new data frame that includes only the most relevant columns.
+```{r} 
+data <- trump_ratings[,c("enddate", "pollster", "samplesize", "approve", "disapprove")]
+data <- rename(data, c("enddate"="date", "pollster"="polling_company", "samplesize"="respondent_count", "approve"="approval_percentage", "disapprove"="disapproval_percentage"))
+```
+# Data exploration
+### Displays the first few rows of the conditioned data set.
+```{r}
+head(data)
+```
+# Plot
+### Converts dates from integer into datetime type.  Plots approval ratings over time.
+```{r}
+data$date <- as.Date(data$date, "%m/%d/%Y")
+ggplot(data, aes(date, approval_percentage)) + geom_line()
+```
+# Conclusions
+### There is regular variation in President Trump's approval rating on a day to day basis.  Overall his ratings showed a general decline between 2017 and 2018 and since have remained between 40% and 50%.
